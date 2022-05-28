@@ -1,0 +1,36 @@
+name: 'SF2 Competition runner'
+description: 'Reports image compression results for the SF2 competition'
+runs:
+  using: "composite"
+  steps:
+    - name: Run competition checker
+      run: |
+        python -m cued_sf2_lab.competition_runner competition \
+          lighthouse \
+          bridge \
+          flamingo
+    - name: Prepare results repository
+      uses: actions/checkout@v3
+      if: ${{ always() && hashFiles('competition/outputs/summary.md') != '' }}
+      with:
+        path: outputs
+    - name: Upload images
+      if: ${{ always() && hashFiles('competition/outputs/summary.md') != '' }}
+      run: |
+        git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+        git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+        cd outputs
+        git checkout --orphan "images-$GITHUB_SHA"
+        git rm -rf .
+        cp -r ../competition/outputs/. .
+        rm .gitignore
+        git add .
+        git commit -m "Images for $GITHUB_REPOSITORY@$GITHUB_SHA"
+        git push origin HEAD:refs/images/for-$GITHUB_SHA
+        echo "Uploaded to: $(git rev-parse HEAD)"
+        # replace the relative urls with absolute urls
+        cat summary.md \
+          | sed -e "s@src=\"./@src=\"https://github.com/$GITHUB_REPOSITORY/blob/$(git rev-parse HEAD)/@g" \
+          | sed -e "s@href=\"./@href=\"https://github.com/$GITHUB_REPOSITORY/blob/$(git rev-parse HEAD)/@g" \
+          > $GITHUB_STEP_SUMMARY
+        echo "::set-output name=Points::some"  # TODO: does this show up in classrooms?
