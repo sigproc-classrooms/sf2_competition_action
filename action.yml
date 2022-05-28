@@ -4,6 +4,7 @@ runs:
   using: "composite"
   steps:
     - name: Run competition checker
+      shell: bash
       run: |
         python -m cued_sf2_lab.competition_runner competition \
           lighthouse \
@@ -16,6 +17,7 @@ runs:
         path: outputs
     - name: Upload images
       if: ${{ always() && hashFiles('competition/outputs/summary.md') != '' }}
+      shell: bash
       run: |
         git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
         git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
