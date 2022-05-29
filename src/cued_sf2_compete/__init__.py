@@ -9,22 +9,23 @@ Options:
   --output=<dir>  Set the directory to write images to
 """
 
-from docopt import docopt, parse_defaults
+import base64
+import functools
+import html
+import importlib
+import os
+import pickle
+import sys
+from pathlib import Path
+from types import ModuleType
+from typing import Any, Callable, Dict, List, NamedTuple, Tuple
 
+import imageio
+import numpy as np
 from cued_sf2_lab import __version__
 from cued_sf2_lab.familiarisation import load_mat_img, plot_image
 from cued_sf2_lab.jpeg import vlctest
-from typing import NamedTuple, Callable, Tuple, Any, List, Dict
-from types import ModuleType
-from pathlib import Path
-import importlib
-import sys
-import numpy as np
-import imageio
-import pickle
-import functools
-import html
-import base64
+from docopt import docopt, parse_defaults
 from matplotlib.colors import LinearSegmentedColormap
 
 error_cm = LinearSegmentedColormap(
@@ -71,7 +72,6 @@ class EncodeOutput(NamedTuple):
     n_header_bits: int
 
 def load(module_name: str) -> Submission:
-    print(sys.path)
     mod = importlib.import_module(module_name)
     try:
         header_bits = mod.header_bits
@@ -199,6 +199,7 @@ def main(module_name, imgs, out_dir=None):
 
 
 def cli():
+    sys.path.append(os.getcwd())
     args = docopt(__doc__, version=__version__)
     main(args['<module_name>'], imgs=args['<img_name>'], out_dir=args['--output'])
 
