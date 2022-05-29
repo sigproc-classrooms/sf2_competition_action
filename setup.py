@@ -21,7 +21,7 @@ setup(
     author='Eric Wieser',
     maintainer='Eric Wieser',
     maintainer_email='efw27@cam.ac.uk',
-    packages=find_packages(),
+    packages=find_packages(where='src'),
     install_requires=[
         'cued_sf2_lab@git+https://github.com/sigproc/cued_sf2_lab.git',
         'docopt',
