@@ -195,7 +195,7 @@ def main(module_name, imgs, out_dir=None):
             pr("</td>")
             fail = fail or this_fail
 
-    if os.environ['GITHUB_ACTIONS']:
+    if 'GITHUB_ACTIONS' in os.environ:
         rms = {row['name']: row['rms'] for row in data}
         print("::set-output name=RMS::" + json.dumps(rms))
 
