@@ -10,6 +10,8 @@ runs:
     - name: Run competition checker
       shell: bash
       run: |
+        pwd
+        ls
         python "$GITHUB_ACTION_PATH/sf2_compete.py" competition \
           lighthouse \
           bridge \
