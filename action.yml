@@ -9,6 +9,7 @@ runs:
         pip install "$GITHUB_ACTION_PATH"
     - name: Run competition checker
       shell: bash
+      id: checker 
       run: |
         cued_sf2_compete competition \
           lighthouse \
@@ -39,4 +40,13 @@ runs:
           | sed -e "s@src=\"./@src=\"https://github.com/$GITHUB_REPOSITORY/blob/$(git rev-parse HEAD)/@g" \
           | sed -e "s@href=\"./@href=\"https://github.com/$GITHUB_REPOSITORY/blob/$(git rev-parse HEAD)/@g" \
           > $GITHUB_STEP_SUMMARY
-        echo "::set-output name=Points::some"  # TODO: does this show up in classrooms?
+    - uses: actions/github-script@v6
+      env:
+        RMS: ${{ steps.checker.outputs.RMS }}
+      with:
+        script: |
+          const set_points = require('$GITHUB_ACTION_PATH/set_points.js')
+          const RMS = JSON.parse(process.env.RMS)
+          const RMS_str = `${(RMS['lighthouse'] * 10).toFixed(0)}/10`
+          console.log(RMS_str)
+          await set_points({github, context, core}, RMS_str)

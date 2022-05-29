@@ -13,6 +13,7 @@ import base64
 import functools
 import html
 import importlib
+import json
 import os
 import pickle
 import sys
@@ -196,6 +197,10 @@ def main(module_name, imgs, out_dir=None):
 
     if fail:
         raise SystemExit("Some images failed the tests")
+
+    if os.environ['GITHUB_ACTIONS']:
+        rms = {row['name']: row['rms'] for row in data}
+        print("::set-output name=RMS::" + json.dumps(rms))
 
 
 def cli():
