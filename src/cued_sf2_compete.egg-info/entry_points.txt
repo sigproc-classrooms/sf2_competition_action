@@ -1,2 +1,0 @@
-[console_scripts]
-cued_sf2_compete = cued_sf2_compete:main

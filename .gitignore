@@ -1,0 +1,13 @@
+#ignore system files
+.ipynb_checkpoints
+.vscode/
+env
+dist
+build
+*.egg-info
+__pycache__
+
+*.orig
+
+.coverage
+htmlcov
