@@ -71,6 +71,7 @@ class EncodeOutput(NamedTuple):
     n_header_bits: int
 
 def load(module_name: str) -> Submission:
+    print(sys.path)
     mod = importlib.import_module(module_name)
     try:
         header_bits = mod.header_bits
