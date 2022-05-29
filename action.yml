@@ -33,7 +33,7 @@ runs:
         rm .gitignore
         git add .
         git commit -m "Images for $GITHUB_REPOSITORY@$GITHUB_SHA"
-        git push origin HEAD:refs/images/for-$GITHUB_SHA
+        git push origin HEAD:refs/images/for-$GITHUB_SHA -f
         echo "Uploaded to: $(git rev-parse HEAD)"
         # replace the relative urls with absolute urls
         cat summary.md \
