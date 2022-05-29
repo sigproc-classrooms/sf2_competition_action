@@ -1,0 +1,8 @@
+README.md
+setup.py
+src/cued_sf2_compete.egg-info/PKG-INFO
+src/cued_sf2_compete.egg-info/SOURCES.txt
+src/cued_sf2_compete.egg-info/dependency_links.txt
+src/cued_sf2_compete.egg-info/entry_points.txt
+src/cued_sf2_compete.egg-info/requires.txt
+src/cued_sf2_compete.egg-info/top_level.txt

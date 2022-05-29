@@ -6,13 +6,11 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        python -m pip install -r "$GITHUB_ACTION_PATH/requirements.txt"
+        python -m pip install -r "$GITHUB_ACTION_PATH"
     - name: Run competition checker
       shell: bash
       run: |
-        pwd
-        ls
-        python "$GITHUB_ACTION_PATH/sf2_compete.py" competition \
+        cued_sf2_compete competition \
           lighthouse \
           bridge \
           flamingo
