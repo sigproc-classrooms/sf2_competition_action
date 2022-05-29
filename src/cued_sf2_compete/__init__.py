@@ -195,12 +195,12 @@ def main(module_name, imgs, out_dir=None):
             pr("</td>")
             fail = fail or this_fail
 
-    if fail:
-        raise SystemExit("Some images failed the tests")
-
     if os.environ['GITHUB_ACTIONS']:
         rms = {row['name']: row['rms'] for row in data}
         print("::set-output name=RMS::" + json.dumps(rms))
+
+    if fail:
+        raise SystemExit("Some images failed the tests")
 
 
 def cli():
