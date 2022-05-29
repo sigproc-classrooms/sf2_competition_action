@@ -41,6 +41,7 @@ runs:
           | sed -e "s@href=\"./@href=\"https://github.com/$GITHUB_REPOSITORY/blob/$(git rev-parse HEAD)/@g" \
           > $GITHUB_STEP_SUMMARY
     - uses: actions/github-script@v6
+      if: ${{ always() && hashFiles('competition/outputs/summary.md') != '' }}
       env:
         RMS: ${{ steps.checker.outputs.RMS }}
       with:
