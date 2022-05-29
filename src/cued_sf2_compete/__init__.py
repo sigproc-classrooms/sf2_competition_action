@@ -111,7 +111,7 @@ def collect(mod: Submission, imgs: List[str]) -> List[Dict]:
         row['Z'] = run_decoder(mod, row['enc'])
 
         row['Z_actual'] = np.clip(row['Z'], 0, 255).astype(np.uint8)
-        row['rms'] = np.std(row['X'] - row['Z_actual'] )
+        row['rms'] = np.std(row['X'].astype(np.double) - row['Z_actual'].astype(np.double))
 
         try:
             row['vlc_bits'] = vlctest(row['enc'].vlc)
