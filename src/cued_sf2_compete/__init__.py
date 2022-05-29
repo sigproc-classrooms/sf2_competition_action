@@ -197,6 +197,11 @@ def main(module_name, imgs, out_dir=None):
     if fail:
         raise SystemExit("Some images failed the tests")
 
-if __name__ == '__main__':
+
+def cli():
     args = docopt(__doc__, version=__version__)
     main(args['<module_name>'], imgs=args['<img_name>'], out_dir=args['--output'])
+
+
+if __name__ == '__main__':
+    cli()

@@ -47,7 +47,7 @@ setup(
         "Source Code": "https://github.com/areeg-98/IIB_project",
     },
     entry_points={
-        "console_scripts": ["cued_sf2_compete=cued_sf2_compete:main"]
+        "console_scripts": ["cued_sf2_compete=cued_sf2_compete:cli"]
     },
 
     python_requires='>=3.5',
