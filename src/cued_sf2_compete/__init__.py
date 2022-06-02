@@ -204,7 +204,7 @@ def main(module_name, imgs, out_dir=None):
 
 
 def cli():
-    sys.path.append(os.getcwd())
+    sys.path.insert(0, os.getcwd())
     args = docopt(__doc__, version=__version__)
     main(args['<module_name>'], imgs=args['<img_name>'], out_dir=args['--output'])
 
