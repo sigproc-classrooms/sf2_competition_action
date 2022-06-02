@@ -6,7 +6,7 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        pip install "$GITHUB_ACTION_PATH"
+        pip install "$GITHUB_ACTION_PATH" -q
     - name: Run competition checker
       shell: bash
       id: checker 
