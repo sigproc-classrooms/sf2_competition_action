@@ -1,14 +1,7 @@
-"""SF2 lab competition runner
-
-Usage:
-  cued_sf2_lab_compete <module_name> <img_name>... [--output=<dir>]
-
-Options:
-  -h --help       Show this screen.
-  --version       Show version.
-  --output=<dir>  Set the directory to write images to
 """
-
+compete encode --mod=competition lighthouse.mat 
+"""
+import click
 import base64
 import functools
 import html
@@ -131,9 +124,52 @@ def asbase64(img: Path) -> str:
         img_data = f.read()
     return 'data:image/png; base64, ' + base64.b64encode(img_data).decode('utf-8')
 
+class SubmissionParamType(click.ParamType):
+    name = "submission"
 
-def main(module_name, imgs, out_dir=None):
-    mod = load(module_name)
+    def convert(self, value, param, ctx):
+        if isinstance(value, Submission):
+            return value
+        sys.path.insert(0, os.getcwd())
+        return load(value)
+
+SUBMISSION = SubmissionParamType()
+
+@click.group()
+# @click.option('--out_dir', help="Set the directory to write images to", type=click.Path())
+@click.pass_context
+def cli(ctx, out_dir=None):
+    pass
+    # ctx.ensure_object(dict)
+    # ctx.obj['out_dir'] = out_dir
+
+
+@cli.command()
+@click.option('--module', type=SUBMISSION, default='competition')
+@click.argument('image', type=click.Path(exists=True, dir_okay=False, path_type=Path))
+@click.argument('pkl', type=click.Path(dir_okay=False, path_type=Path))
+@click.pass_obj
+def encode(obj, module: Submission, img, pkl):
+    X, _ = load_mat_img(img=f'img', img_info='X')
+    X.flags.writeable = False
+    enc = run_encoder(mod, X)
+    with pkl.open('wb') as f:
+        pickle.dump(enc, f)
+
+@cli.command()
+@click.option('--module', type=SUBMISSION, default='competition')
+@click.argument('pkl', type=click.Path(exists=True, dir_okay=False, path_type=Path))
+@click.argument('out_pkl', type=click.Path(dir_okay=False, path_type=Path))
+@click.pass_obj
+def decode(obj, module: Submission, pkl, image):
+    with pkl.open('rb') as f:
+        enc = pickle.load(f)
+    
+
+@cli.command()
+@click.argument('module', type=SUBMISSION)
+@click.argument('imgs', nargs=-1)
+def all(module, imgs, out_dir=None):
     if out_dir is None:
         out_dir = Path(mod.module.__file__).parent / 'outputs'
     else:
@@ -201,13 +237,3 @@ def main(module_name, imgs, out_dir=None):
 
     if fail:
         raise SystemExit("Some images failed the tests")
-
-
-def cli():
-    sys.path.insert(0, os.getcwd())
-    args = docopt(__doc__, version=__version__)
-    main(args['<module_name>'], imgs=args['<img_name>'], out_dir=args['--output'])
-
-
-if __name__ == '__main__':
-    cli()
