@@ -1,0 +1,5 @@
+tasks:
+  - init: pip install .
+
+additionalRepositories:
+  - url: https://github.com/sigproc-classrooms/sf2_competition_template
