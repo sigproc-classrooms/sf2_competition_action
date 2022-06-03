@@ -8,7 +8,7 @@ Options:
   --version       Show version.
   --output=<dir>  Set the directory to write images to
 """
-
+import concurrent.futures
 import base64
 import functools
 import html
@@ -88,16 +88,23 @@ def load(module_name: str) -> Submission:
         raise RuntimeError("No `decode` function found")
     return Submission(mod, header_bits, encode, decode)
 
-
-def run_encoder(mod: Submission, X: np.ndarray) -> EncodeOutput:
-    # TODO: run in separate process?
+def encode_process(mod: str, X: np.array) -> EncodeOutput:
+    mod = load(mod)
     vlc, header = mod.encode(X)
     h_bits = mod.header_bits(header)
     return EncodeOutput(vlc, header, h_bits)
 
-def run_decoder(mod: Submission, x: EncodeOutput) -> np.ndarray:
-    # TODO: run in separate process?
+def run_encoder(mod: Submission, X: np.ndarray) -> EncodeOutput:
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        return executor.submit(encode_process, mod.module.__name__, X).result()
+
+def decode_process(mod: str, x: EncodeOutput) -> np.ndarray:
+    mod = load(mod)
     return mod.decode(x.vlc, x.header)
+
+def run_decoder(mod: Submission, x: EncodeOutput) -> np.ndarray:
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        return executor.submit(decode_process, mod.module.__name__, x).result()
 
 def collect(mod: Submission, imgs: List[str]) -> List[Dict]:
     data = [dict(errors=[]) for _ in imgs]
