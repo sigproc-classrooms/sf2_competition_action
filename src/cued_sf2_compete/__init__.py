@@ -1,12 +1,14 @@
 """SF2 lab competition runner
 
 Usage:
-  cued_sf2_lab_compete <module_name> <img_name>... [--output=<dir>]
+  cued_sf2_lab_compete <module_name>
+    [--required=<req_img>]... <img_name>... [--output=<dir>]
 
 Options:
   -h --help       Show this screen.
   --version       Show version.
-  --output=<dir>  Set the directory to write images to
+  --required=<req_img>  Other images which must pass
+  --output=<dir>         Set the directory to write images to
 """
 import concurrent.futures
 import base64
@@ -28,6 +30,7 @@ from cued_sf2_lab.familiarisation import load_mat_img, plot_image
 from cued_sf2_lab.jpeg import vlctest
 from docopt import docopt, parse_defaults
 from matplotlib.colors import LinearSegmentedColormap
+import multiprocessing
 
 error_cm = LinearSegmentedColormap(
     'seismic_alpha',
@@ -109,7 +112,15 @@ def run_decoder(mod: Submission, x: EncodeOutput) -> np.ndarray:
 def collect(mod: Submission, imgs: List[str]) -> List[Dict]:
     data = [dict(errors=[]) for _ in imgs]
     for i, img in enumerate(imgs):
-        X, _ = load_mat_img(img=f'{img}.mat', img_info='X')
+        if img.startswith('cued-sf2://'):
+            img = img.removeprefix('cued-sf2://')
+            fname = str((Path(__file__).parent / 'images') / img)
+            img = img.removesuffix('.mat')
+        elif not img.endswith('.mat'):
+            fname = f'{img}.mat'
+        else:
+            fname = img
+        X, _ = load_mat_img(img=fname, img_info='X')
         data[i]['name'] = img
         data[i]['X'] = X
         X.flags.writeable = False
@@ -139,7 +150,7 @@ def asbase64(img: Path) -> str:
     return 'data:image/png; base64, ' + base64.b64encode(img_data).decode('utf-8')
 
 
-def main(module_name, imgs, out_dir=None):
+def main(module_name, imgs, req_imgs, out_dir=None):
     mod = load(module_name)
     if out_dir is None:
         out_dir = Path(mod.module.__file__).parent / 'outputs'
@@ -153,54 +164,65 @@ def main(module_name, imgs, out_dir=None):
     with (Path(__file__).parent / 'show_image.svg').open('r') as f:
         svg_template = f.read()
 
+    all_imgs = req_imgs + imgs
+
     with (out_dir / 'summary.md').open('w') as f:
         pr = functools.partial(print, file=f)
-        pr("<h1>Submission results</h1>")
-        pr()
 
-        data = collect(mod, imgs)
-        pr()
-        pr("<table>")
-        pr("<tr>")
-        for i, row in enumerate(data):
-            this_fail = False
-            if row['vlc_bits'] is None:
-                this_fail = True
-            if row['total_bits'] is not None and row['total_bits'] > 40960:
-                this_fail = True
-            pr("<td>")
-            pr(f"<h2>{row['name']} {'❌' if this_fail else '✔️'}</h2>")
-            imageio.imwrite(out_dir / f"{row['name']}.png", data[i]['Z_actual'])
-            imageio.imwrite(out_dir / f"{row['name']}-diff.png",
-                diff_image(data[i]['X'], data[i]['Z_actual']))
-            with (out_dir / f"{row['name']}.svg").open('w') as f:
-                f.write(svg_template
-                    .replace('$DATA', asbase64(out_dir / f"{row['name']}.png"))
-                    .replace('$DIFF_DATA', asbase64(out_dir / f"{row['name']}-diff.png")))
-
-            with (out_dir / f"{row['name']}.pkl").open('wb') as f:
-                pickle.dump(row['enc'], f)
-
-            pr(f'<img src="./{row["name"]}.svg?raw=true" alt="{row["name"]} (output)">')
+        req_data = collect(mod, req_imgs)
+        extra_data = collect(mod, imgs)
+        for header, data, required in [('Submission results', req_data, True), ('Other images', extra_data, False)]:
+            if not data:
+                continue
+            if header:
+                pr(f"<h1>{header}</h1>")
+                pr()
             pr("<table>")
-            pr(f"<tr><th rowspan='3' scope='row'>Bit counts</th><th scope='row'>header</th><td>{row['enc'].n_header_bits}</td></tr>")
-            if row['vlc_bits'] is None:
-                pr(f"<tr><th scope='row'>vlc</th><td>❌ INVALID!<br />{row['vlc_error']}</td></tr>")
-                pr(f"<tr><th scope='row'>total</th><td>&mdash;</td></tr>")
-            else:
-                pr(f"<tr><th scope='row'>vlc</th><td>{row['vlc_bits']}</td></tr>")
-                pr(f"<tr><th scope='row'>total</th><td>{row['total_bits']}</td></tr>")
-            pr(f"<tr><th colspan='2' scope='row'>RMS Error</th><td>{row['rms']:.3f}</td></tr>")
+            pr("<tr>")
+            for i, row in enumerate(data):
+                this_fail = False
+                if row['vlc_bits'] is None:
+                    this_fail = True
+                if row['total_bits'] is not None and row['total_bits'] > 40960:
+                    this_fail = True
+                pr("<td>")
+                pr(f"<h2>{row['name']} {'❌' if this_fail else '✔️'}</h2>")
+                out_name = f"{row['name']}"
+                Path(out_dir / f"{out_name}").parent.mkdir(parents=True, exist_ok=True)
+                imageio.imwrite(out_dir / f"{out_name}.png", data[i]['Z_actual'])
+                imageio.imwrite(out_dir / f"{out_name}-diff.png",
+                    diff_image(data[i]['X'], data[i]['Z_actual']))
+                with (out_dir / f"{out_name}.svg").open('w') as f:
+                    f.write(svg_template
+                        .replace('$DATA', asbase64(out_dir / f"{out_name}.png"))
+                        .replace('$DIFF_DATA', asbase64(out_dir / f"{out_name}-diff.png")))
+
+                with (out_dir / f"{out_name}.pkl").open('wb') as f:
+                    pickle.dump(row['enc'], f)
+
+                pr(f'<img src="./{out_name}.svg?raw=true" alt="{out_name} (output)">')
+                pr("<table>")
+                pr(f"<tr><th rowspan='3' scope='row'>Bit counts</th><th scope='row'>header</th><td>{row['enc'].n_header_bits}</td></tr>")
+                if row['vlc_bits'] is None:
+                    pr(f"<tr><th scope='row'>vlc</th><td>❌ INVALID!<br />{row['vlc_error']}</td></tr>")
+                    pr(f"<tr><th scope='row'>total</th><td>&mdash;</td></tr>")
+                else:
+                    pr(f"<tr><th scope='row'>vlc</th><td>{row['vlc_bits']}</td></tr>")
+                    pr(f"<tr><th scope='row'>total</th><td>{row['total_bits']}</td></tr>")
+                pr(f"<tr><th colspan='2' scope='row'>RMS Error</th><td>{row['rms']:.3f}</td></tr>")
+                pr("</table>")
+                if row['total_bits'] is not None and row['total_bits'] > 40960:
+                    pr("<p><b>❌ TOO LARGE!</b> Must be at most 40960 bits</p>")
+                if row['enc'].header is not None:
+                    pr("<details><summary>Header contents</summary><pre>")
+                    pr(html.escape(repr(row['enc'].header)))
+                    pr("</pre></details>")
+                pr(f'<a href="./{out_name}.pkl?raw=true" download>🗄️ Download encoded data</a>')
+                pr("</td>")
+                if required:
+                    fail = fail or this_fail
+            pr("</tr>")
             pr("</table>")
-            if row['total_bits'] is not None and row['total_bits'] > 40960:
-                pr("<p><b>❌ TOO LARGE!</b> Must be at most 40960 bits</p>")
-            if row['enc'].header is not None:
-                pr("<details><summary>Header contents</summary><pre>")
-                pr(html.escape(repr(row['enc'].header)))
-                pr("</pre></details>")
-            pr(f'<a href="./{row["name"]}.pkl?raw=true" download>🗄️ Download encoded data</a>')
-            pr("</td>")
-            fail = fail or this_fail
 
     if 'GITHUB_ACTIONS' in os.environ:
         rms = {row['name']: row['rms'] for row in data}
@@ -213,7 +235,9 @@ def main(module_name, imgs, out_dir=None):
 def cli():
     sys.path.insert(0, os.getcwd())
     args = docopt(__doc__, version=__version__)
-    main(args['<module_name>'], imgs=args['<img_name>'], out_dir=args['--output'])
+    main(args['<module_name>'],
+        req_imgs=args['--required'],
+        imgs=args['<img_name>'], out_dir=args['--output'])
 
 
 if __name__ == '__main__':

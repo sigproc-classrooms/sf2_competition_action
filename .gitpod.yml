@@ -1,5 +1,8 @@
 tasks:
-  - init: pip install -e .
+  - init: |
+      pyenv install 3.10.4 && pyenv global 3.10.4
+      pip install -e .
+
 
 additionalRepositories:
   - url: https://github.com/sigproc-classrooms/sf2_competition_template
