@@ -30,7 +30,7 @@ setup(
     ],
     # {'package_name': 'folder_with_its_source'}
     package_dir={'': 'src'},
-    package_data={'cued_sf2_compete': ['*.svg', 'images/*.mat']},
+    package_data={'cued_sf2_compete': ['*.svg', 'images/*.mat', 'images/competition/*.mat']},
 
     classifiers=[
         # 'Intended Audience :: Science/Research',
