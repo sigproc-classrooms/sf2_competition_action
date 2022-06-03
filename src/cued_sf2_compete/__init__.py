@@ -225,7 +225,7 @@ def main(module_name, imgs, req_imgs, out_dir=None):
             pr("</table>")
 
     if 'GITHUB_ACTIONS' in os.environ:
-        rms = {row['name']: row['rms'] for row in data}
+        rms = {row['name']: row['rms'] for row in req_data}
         print("::set-output name=RMS::" + json.dumps(rms))
 
     if fail:
