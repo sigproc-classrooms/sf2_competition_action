@@ -110,8 +110,9 @@ if 'GITHUB_ACTIONS' in os.environ:
         except Exception as e:
             tb = traceback.TracebackException.from_exception(e)
             e_msg = encode_msg_text_for_github(''.join(tb.format_exception_only()))
-            msg = encode_msg_text_for_github(''.join(traceback.format_list(tb.stack)))
-            for s in tb.stack:
+            stack = tb.stack[2:]
+            msg = encode_msg_text_for_github(''.join(traceback.format_list(stack)))
+            for s in stack:
                 print(f'::error file={s.filename},line={s.lineno},title={e_msg}::{msg}')
             raise
 else:
