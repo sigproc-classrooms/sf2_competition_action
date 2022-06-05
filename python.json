@@ -1,7 +1,7 @@
 {
     "problemMatcher": [
         {
-            "owner": "sf2_competition_action",
+            "owner": "python",
             "pattern": [
                 {
                     "regexp": "^.*File \"(/home/runner/work/[^\"]|.*)\", line (\\d+).*",
