@@ -25,7 +25,8 @@ module.exports = async ({github, context, core}, points) => {
       owner: context.repo.owner,
       repo: context.repo.repo,
       check_run_id: checkRun.id
-    }).data;
+    });
+    console.log(annotations);
     annotations.splice(0, 0, {
       // Using the `.github` path is what education/autograding does
       path: '.github',
