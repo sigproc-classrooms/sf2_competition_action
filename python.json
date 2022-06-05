@@ -1,0 +1,21 @@
+{
+    "problemMatcher": [
+        {
+            "owner": "sf2_competition_action",
+            "pattern": [
+                {
+                    "regexp": "^.*File \\\"([^\\\"]|.*)\\\", line (\\d+).*",
+                    "file": 1,
+                    "line": 2
+                },
+                {
+                    "regexp": "^.*raise.*$"
+                },
+                {
+                    "regexp": "^\\s*(.*)\\s*$",
+                    "message": 1
+                }
+            ]
+        }
+    ]
+}
