@@ -1,10 +1,10 @@
 {
     "problemMatcher": [
         {
-            "owner": "python",
+            "owner": "pythonx",
             "pattern": [
                 {
-                    "regexp": "^.*File \"(/home/runner/work/[^\"]*).py\", line (\\d+).*",
+                    "regexp": "^.*File \"([^\"]*).py\", line (\\d+).*",
                     "file": 1,
                     "line": 2
                 },
