@@ -4,15 +4,15 @@
             "owner": "pythonx",
             "pattern": [
                 {
-                    "regexp": "^.*File \"([^\"]*)\", line (\\d+).*",
+                    "regexp": "^  File \"([^\"]*).py\", line (\\d+).*",
                     "file": 1,
                     "line": 2
                 },
                 {
-                    "regexp": "^.*raise.*$"
+                    "regexp": "^    .*$"
                 },
                 {
-                    "regexp": "^\\s*(.*)\\s*$",
+                    "regexp": "^(?!  File)(.*)\\s*$",
                     "message": 1
                 }
             ]
