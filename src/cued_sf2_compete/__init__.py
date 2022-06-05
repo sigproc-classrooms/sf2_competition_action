@@ -188,9 +188,9 @@ def main(module_name, imgs, req_imgs, out_dir=None):
                     this_fail = True
                 
                 this_json[row['name']] = dict(
-                    rms=row['rms'],
+                    rms=float(row['rms']),
                     fail=this_fail,
-                    total_bits=row['total_bits']
+                    total_bits=int(row['total_bits'])
                 )
                 pr("<td>")
                 pr(f"<h2>{row['name']} {'❌' if this_fail else '✔️'}</h2>")
