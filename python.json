@@ -1,0 +1,21 @@
+{
+    "problemMatcher": [
+        {
+            "owner": "pythonx",
+            "pattern": [
+                {
+                    "regexp": "^  File \"([^\"]*)\", line (\\d+).*",
+                    "file": 1,
+                    "line": 2
+                },
+                {
+                    "regexp": "^    .*$"
+                },
+                {
+                    "regexp": "^(?!  File)(.*)\\s*$",
+                    "message": 1
+                }
+            ]
+        }
+    ]
+}

@@ -7,6 +7,8 @@ runs:
       shell: bash
       run: |
         pip install "$GITHUB_ACTION_PATH" -q
+        echo "::remove-matcher owner=python::"
+        echo "::add-matcher::$GITHUB_ACTION_PATH/python.json"
     - name: Run competition checker
       shell: bash
       id: checker 
