@@ -62,4 +62,4 @@ runs:
             const RMS_str = `${(RMS['lighthouse'] * 10).toFixed(0)}/10`
             console.log(RMS_str)
             await set_points({github, context, core}, RMS_str)
-          } catch(e) {}
+          } catch (e) {}
