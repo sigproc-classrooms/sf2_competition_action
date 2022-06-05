@@ -172,7 +172,7 @@ def main(module_name, imgs, req_imgs, out_dir=None):
         req_data = collect(mod, req_imgs)
         extra_data = collect(mod, imgs)
         all_json = dict(required={}, extra={})
-        for header, data, required, json in [('Submission results', req_data, True, all_json['required']), ('Other images', extra_data, False, all_json['extra'])]:
+        for header, data, required, this_json in [('Submission results', req_data, True, all_json['required']), ('Other images', extra_data, False, all_json['extra'])]:
             if not data:
                 continue
             if header:
@@ -187,7 +187,7 @@ def main(module_name, imgs, req_imgs, out_dir=None):
                 if row['total_bits'] is not None and row['total_bits'] > 40960:
                     this_fail = True
                 
-                json[row['name']] = dict(
+                this_json[row['name']] = dict(
                     rms=row['rms'],
                     fail=this_fail,
                     total_bits=row['total_bits']
@@ -232,7 +232,7 @@ def main(module_name, imgs, req_imgs, out_dir=None):
             pr("</table>")
     all_json['failed'] = fail
     with (out_dir / f"summary.json").open('w') as f:
-        json.dump(all_json, f)
+        json.dump(all_json, f, indent=2)
 
     if 'GITHUB_ACTIONS' in os.environ:
         rms = {row['name']: row['rms'] for row in req_data}
