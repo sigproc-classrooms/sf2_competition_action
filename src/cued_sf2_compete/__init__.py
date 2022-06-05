@@ -108,10 +108,11 @@ if 'GITHUB_ACTIONS' in os.environ:
         try:
             return func(*args)
         except Exception as e:
-            msg = traceback.format_exc()
-            msg = encode_msg_text_for_github(msg)
-            for s in traceback.extract_tb(e.__traceback__):
-                print(f'::error file={s.filename},line={s.lineno},title={s.name}::{msg}')
+            tb = traceback.TracebackException.from_exception(e)
+            e_msg = encode_msg_text_for_github(''.join(tb.format_exception_only()))
+            msg = encode_msg_text_for_github(''.join(traceback.format_list(tb.stack)))
+            for s in tb.stack:
+                print(f'::error file={s.filename},line={s.lineno},title={e_msg}::{msg}')
             raise
 else:
     def run_isolated(func, *args):
