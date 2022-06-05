@@ -51,10 +51,15 @@ runs:
         RMS: ${{ steps.checker.outputs.RMS }}
       with:
         script: |
+          let RMS = null;
+          const set_points = require(process.env.GITHUB_ACTION_PATH + '/set_points.js');
           try {
-            const set_points = require(process.env.GITHUB_ACTION_PATH + '/set_points.js')
-            const RMS = JSON.parse(process.env.RMS)
+            RMS = JSON.parse(process.env.RMS)
+          } catch (e) {
+            console.warn("Unable to parse score")
+          }
+          if (RMS) {
             const RMS_str = `${(RMS['lighthouse'] * 10).toFixed(0)}/10`
             console.log(RMS_str)
             await set_points({github, context, core}, RMS_str)
-          } catch (e) {}
+          }
