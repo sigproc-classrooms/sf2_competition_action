@@ -111,8 +111,7 @@ if 'GITHUB_ACTIONS' in os.environ:
             msg = traceback.format_exc()
             msg = encode_msg_text_for_github(msg)
             for s in traceback.extract_tb(e.__traceback__):
-                # if 'GITHUB_ACTIONS' in os.environ:
-                print(f'::error file={s.filename},line{s.lineno}::{msg}')
+                print(f'::error file={s.filename},line={s.lineno},title={s.name}::{msg}')
             raise
 else:
     def run_isolated(func, *args):
