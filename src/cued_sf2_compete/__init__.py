@@ -212,7 +212,7 @@ def main(module_name, imgs, req_imgs, out_dir=None):
                 this_json[row['name']] = dict(
                     rms=float(row['rms']),
                     fail=this_fail,
-                    total_bits=int(row['total_bits'])
+                    total_bits=int(row['total_bits']) if row['total_bits'] is not None else None
                 )
                 pr("<td>")
                 pr(f"<h2>{row['name']} {'❌' if this_fail else '✔️'}</h2>")
