@@ -20,13 +20,14 @@ module.exports = async ({github, context, core}, points) => {
     // the title and summary to be overwritten by GitHub Actions (they are required in this call)
     // We'll also store the total in an annotation to future-proof
     const text = `Points ${points}`;
+    // Unlike `education/autograding`, we do not discard the previous annotations
     let annotations = await github.rest.checks.listAnnotations({
       owner: context.repo.owner,
       repo: context.repo.repo,
       check_run_id: checkRun.id
     });
     annotations.splice(0, 0, {
-      // Using the `.github` path is what GitHub Actions does
+      // Using the `.github` path is what education/autograding does
       path: '.github',
       start_line: 1,
       end_line: 1,
