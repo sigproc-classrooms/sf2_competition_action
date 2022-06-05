@@ -4,7 +4,7 @@
             "owner": "pythonx",
             "pattern": [
                 {
-                    "regexp": "^.*File \"([^\"]*).py\", line (\\d+).*",
+                    "regexp": "^.*File \"([^\"]*)\", line (\\d+).*",
                     "file": 1,
                     "line": 2
                 },
