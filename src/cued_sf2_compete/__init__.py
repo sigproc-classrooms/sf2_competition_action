@@ -97,9 +97,31 @@ def encode_process(mod: str, X: np.array) -> EncodeOutput:
     h_bits = mod.header_bits(header)
     return EncodeOutput(vlc, header, h_bits)
 
+def encode_msg_text_for_github(msg):
+    # even though this is probably url quoting, we match the implementation at
+    # https://github.com/actions/toolkit/blob/af821474235d3c5e1f49cee7c6cf636abb0874c4/packages/core/src/command.ts#L36-L94
+    return msg.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+
+if 'GITHUB_ACTIONS' in os.environ:
+    def run_isolated(func, *args):
+        import traceback
+        try:
+            return func(*args)
+        except Exception as e:
+            tb = traceback.TracebackException.from_exception(e)
+            e_msg = encode_msg_text_for_github(''.join(tb.format_exception_only()))
+            stack = tb.stack[2:]
+            msg = encode_msg_text_for_github(''.join(traceback.format_list(stack)))
+            for s in stack:
+                print(f'::error file={s.filename},line={s.lineno},title={e_msg}::{msg}')
+            raise
+else:
+    def run_isolated(func, *args):
+        return func(*args)
+
 def run_encoder(mod: Submission, X: np.ndarray) -> EncodeOutput:
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        return executor.submit(encode_process, mod.module.__name__, X).result()
+        return executor.submit(run_isolated, encode_process, mod.module.__name__, X).result()
 
 def decode_process(mod: str, x: EncodeOutput) -> np.ndarray:
     mod = load(mod)
@@ -107,7 +129,7 @@ def decode_process(mod: str, x: EncodeOutput) -> np.ndarray:
 
 def run_decoder(mod: Submission, x: EncodeOutput) -> np.ndarray:
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        return executor.submit(decode_process, mod.module.__name__, x).result()
+        return executor.submit(run_isolated, decode_process, mod.module.__name__, x).result()
 
 def collect(mod: Submission, imgs: List[str]) -> List[Dict]:
     data = [dict(errors=[]) for _ in imgs]
