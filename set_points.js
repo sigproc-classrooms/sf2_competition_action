@@ -21,12 +21,11 @@ module.exports = async ({github, context, core}, points) => {
     // We'll also store the total in an annotation to future-proof
     const text = `Points ${points}`;
     // Unlike `education/autograding`, we do not discard the previous annotations
-    let annotations = await github.rest.checks.listAnnotations({
+    let annotations = (await github.rest.checks.listAnnotations({
       owner: context.repo.owner,
       repo: context.repo.repo,
       check_run_id: checkRun.id
-    });
-    console.log(annotations);
+    })).data;
     annotations.splice(0, 0, {
       // Using the `.github` path is what education/autograding does
       path: '.github',
