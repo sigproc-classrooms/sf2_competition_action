@@ -4,7 +4,7 @@
             "owner": "sf2_competition_action",
             "pattern": [
                 {
-                    "regexp": "^.*File \"([^\"]|.*)\", line (\\d+).*",
+                    "regexp": "^.*File \"(/home/runner/work/[^\"]|.*)\", line (\\d+).*",
                     "file": 1,
                     "line": 2
                 },
