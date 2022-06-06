@@ -18,3 +18,7 @@ To use them, add a `cued-sf2://` prefix to the filename:
 ```bash
 cued_sf2_compete competition cued-sf2://competition/2021.mat
 ```
+
+## Demonstrator info
+
+This repository interacts with https://github.com/sigproc-classrooms/sf2_competition_results, which is used to collect the results at the end of the lab.
