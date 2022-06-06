@@ -60,7 +60,7 @@ runs:
             console.warn("Unable to parse score")
           }
           if (RMS) {
-            const RMS_str = `${(RMS['lighthouse'] * 10).toFixed(0)}/10`
+            const RMS_str = `${(RMS['competition/2022'] * 10).toFixed(0)}/10`
             console.log(RMS_str)
             await set_points({github, context, core}, RMS_str)
           }
