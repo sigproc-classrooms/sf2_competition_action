@@ -13,9 +13,10 @@ runs:
       id: checker 
       run: |
         cued_sf2_compete competition \
-          --required cued-sf2://lighthouse.mat \
+          --required cued-sf2://competition/2022.mat \
           --required cued-sf2://bridge.mat \
           --required cued-sf2://flamingo.mat \
+          cued-sf2://lighthouse.mat \
           cued-sf2://competition/2018.mat \
           cued-sf2://competition/2019.mat \
           cued-sf2://competition/2020.mat \
