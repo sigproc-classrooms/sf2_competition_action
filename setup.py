@@ -38,18 +38,14 @@ setup(
 
         # 'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
     ],
-    project_urls={
-        # "Bug Tracker": "https://github.com/pygae/clifford/issues",
-        "Source Code": "https://github.com/areeg-98/IIB_project",
-    },
     entry_points={
         "console_scripts": ["cued_sf2_compete=cued_sf2_compete:cli"]
     },
 
-    python_requires='>=3.5',
+    python_requires='>=3.8',
 )
