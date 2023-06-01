@@ -183,12 +183,12 @@ def main(module_name, imgs, req_imgs, out_dir=None):
 
     fail = False
 
-    with (Path(__file__).parent / 'show_image.svg').open('r') as f:
+    with (Path(__file__).parent / 'show_image.svg').open('r', encoding='utf8') as f:
         svg_template = f.read()
 
     all_imgs = req_imgs + imgs
 
-    with (out_dir / 'summary.md').open('w') as f:
+    with (out_dir / 'summary.md').open('w', encoding='utf8') as f:
         pr = functools.partial(print, file=f)
 
         req_data = collect(mod, req_imgs)
@@ -253,7 +253,7 @@ def main(module_name, imgs, req_imgs, out_dir=None):
             pr("</tr>")
             pr("</table>")
     all_json['failed'] = fail
-    with (out_dir / f"summary.json").open('w') as f:
+    with (out_dir / f"summary.json").open('w', encoding='utf8') as f:
         json.dump(all_json, f, indent=2)
 
     if 'GITHUB_ACTIONS' in os.environ:
