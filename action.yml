@@ -17,10 +17,10 @@ runs:
           --required cued-sf2://bridge.mat \
           --required cued-sf2://flamingo.mat \
           cued-sf2://lighthouse.mat \
-          cued-sf2://competition/2018.mat \
-          cued-sf2://competition/2019.mat \
-          cued-sf2://competition/2020.mat \
-          cued-sf2://competition/2021.mat \
+          # cued-sf2://competition/2018.mat \
+          # cued-sf2://competition/2019.mat \
+          # cued-sf2://competition/2020.mat \
+          # cued-sf2://competition/2021.mat \
           cued-sf2://competition/2022.mat
     - name: Prepare results repository
       uses: actions/checkout@v3
