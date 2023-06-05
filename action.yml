@@ -13,9 +13,10 @@ runs:
       id: checker 
       run: |
         cued_sf2_compete competition \
-          --required cued-sf2://lighthouse.mat \
+          --required cued-sf2://competition/2023.mat \
           --required cued-sf2://bridge.mat \
           --required cued-sf2://flamingo.mat \
+          cued-sf2://lighthouse.mat \
           cued-sf2://competition/2018.mat \
           cued-sf2://competition/2019.mat \
           cued-sf2://competition/2020.mat \
@@ -60,7 +61,7 @@ runs:
             console.warn("Unable to parse score")
           }
           if (RMS) {
-            const RMS_str = `${(RMS['lighthouse'] * 10).toFixed(0)}/10`
+            const RMS_str = `${(RMS['competition/2023'] * 10).toFixed(0)}/10`
             console.log(RMS_str)
             await set_points({github, context, core}, RMS_str)
           }
