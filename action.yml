@@ -13,6 +13,7 @@ runs:
       id: checker 
       run: |
         cued_sf2_compete competition \
+          --required cued-sf2://competition/2024.mat \
           --required cued-sf2://competition/2023.mat \
           --required cued-sf2://bridge.mat \
           --required cued-sf2://flamingo.mat \
@@ -57,7 +58,7 @@ runs:
             console.warn("Unable to parse score")
           }
           if (RMS) {
-            const RMS_str = `${(RMS['competition/2023'] * 10).toFixed(0)}/10`
+            const RMS_str = `${(RMS['competition/2024'] * 10).toFixed(0)}/10`
             console.log(RMS_str)
             await set_points({github, context, core}, RMS_str)
           }
